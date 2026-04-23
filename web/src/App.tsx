@@ -1,4 +1,6 @@
 import { type FormEvent, useState } from "react";
+import logo from "../public/logo.svg";
+import resourceDefault from "../public/resource-default.svg";
 import {
   getGetItemsQueryKey,
   useDeleteItemsId,
@@ -102,8 +104,9 @@ export default function App() {
   return (
     <main className="min-h-screen bg-forsvaret-warm-white px-4 py-10 text-forsvaret-black">
       <div className="mx-auto max-w-xl space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold">Workshop resources</h1>
+        <header className="space-y-2 flex flex-col items-center">
+          <img src={logo} alt="App logo" className="h-16 w-16 mb-2" />
+          <h1 className="text-2xl font-semibold">Reservasjoner</h1>
           <p className="text-sm text-forsvaret-gray">
             Create, update, and remove bookable resources with the generated API hooks.
           </p>
@@ -193,6 +196,11 @@ export default function App() {
               <ul className="mt-3 divide-y divide-forsvaret-gray-light">
                 {items.map((item) => (
                   <li key={item.id} className="flex items-start justify-between gap-3 py-3">
+                    <img
+                      src={resourceDefault}
+                      alt="Ressursbilde"
+                      className="h-12 w-12 rounded-lg border border-forsvaret-gray-light bg-forsvaret-warm-white object-cover mr-3"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-forsvaret-black">{item.title}</p>
                       <p className="text-sm text-forsvaret-gray-dark">{item.category}</p>
