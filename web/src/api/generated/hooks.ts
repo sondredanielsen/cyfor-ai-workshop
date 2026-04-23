@@ -42,18 +42,28 @@ export interface HealthResponse {
   status: HealthResponseStatus;
 }
 
-export interface Item {
+export interface Resource {
   id: number;
   /**
      * @minLength 1
      * @maxLength 120
      */
   title: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  description: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  category: string;
   createdAt: string;
 }
 
-export interface ItemListResponse {
-  items: Item[];
+export interface ResourceListResponse {
+  items: Resource[];
 }
 
 export interface CreateItem {
@@ -62,6 +72,38 @@ export interface CreateItem {
      * @maxLength 120
      */
   title: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  description: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  category: string;
+}
+
+export interface ErrorResponse {
+  message: string;
+}
+
+export interface UpdateItem {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  description: string;
+  /**
+     * @minLength 1
+     * @maxLength 40
+     */
+  category: string;
 }
 
 export const get = (
@@ -244,7 +286,7 @@ export const getItems = (
 ) => {
 
 
-      return customClient<ItemListResponse>(
+      return customClient<ResourceListResponse>(
       {url: `/items`, method: 'GET', signal
     },
       );
@@ -331,7 +373,7 @@ export const postItems = (
 ) => {
 
 
-      return customClient<Item>(
+      return customClient<Resource>(
       {url: `/items`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createItem, signal
@@ -381,6 +423,65 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostItemsMutationOptions(options), queryClient);
+    }
+
+export const putItemsId = (
+    id: number,
+    updateItem: UpdateItem,
+ signal?: AbortSignal
+) => {
+
+
+      return customClient<Resource>(
+      {url: `/items/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateItem, signal
+    },
+      );
+    }
+
+
+
+export const getPutItemsIdMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putItemsId>>, TError,{id: number;data: UpdateItem}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof putItemsId>>, TError,{id: number;data: UpdateItem}, TContext> => {
+
+const mutationKey = ['putItemsId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putItemsId>>, {id: number;data: UpdateItem}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  putItemsId(id,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutItemsIdMutationResult = NonNullable<Awaited<ReturnType<typeof putItemsId>>>
+    export type PutItemsIdMutationBody = UpdateItem
+    export type PutItemsIdMutationError = ErrorType<ErrorResponse>
+
+    export const usePutItemsId = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putItemsId>>, TError,{id: number;data: UpdateItem}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putItemsId>>,
+        TError,
+        {id: number;data: UpdateItem},
+        TContext
+      > => {
+      return useMutation(getPutItemsIdMutationOptions(options), queryClient);
     }
 
 export const deleteItemsId = (

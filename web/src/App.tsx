@@ -9,6 +9,8 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export default function App() {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const queryClient = useQueryClient();
   const refreshItems = () =>
     queryClient.invalidateQueries({ queryKey: getGetItemsQueryKey() });
@@ -17,6 +19,8 @@ export default function App() {
     mutation: {
       onSuccess: async () => {
         setTitle("");
+        setDescription("");
+        setCategory("");
         await refreshItems();
       },
     },
@@ -28,21 +32,25 @@ export default function App() {
   });
 
   const trimmedTitle = title.trim();
+  const trimmedDescription = description.trim();
+  const trimmedCategory = category.trim();
   const items = itemsQuery.data?.items ?? [];
   const deletingItemId = deleteItemMutation.variables?.id;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!trimmedTitle || createItemMutation.isPending) {
+    if (!trimmedTitle || !trimmedDescription || !trimmedCategory || createItemMutation.isPending) {
       return;
     }
 
     createItemMutation.mutate({
       data: {
         title: trimmedTitle,
-        },
-      });
+        description: trimmedDescription,
+        category: trimmedCategory,
+      },
+    });
   };
 
   const handleRemove = (id: number) => {
@@ -70,16 +78,30 @@ export default function App() {
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Add an item"
+            placeholder="Resource title"
             maxLength={120}
             className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-base outline-none focus:border-slate-500"
           />
+          <input
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+            placeholder="Category"
+            maxLength={40}
+            className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-base outline-none focus:border-slate-500"
+          />
+          <input
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder="Description"
+            maxLength={500}
+            className="flex-[2] rounded-md border border-slate-300 px-3 py-2 text-base outline-none focus:border-slate-500"
+          />
           <button
             type="submit"
-            disabled={!trimmedTitle || createItemMutation.isPending}
+            disabled={!trimmedTitle || !trimmedDescription || !trimmedCategory || createItemMutation.isPending}
             className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
-            {createItemMutation.isPending ? "Adding..." : "Add item"}
+            {createItemMutation.isPending ? "Adding..." : "Add resource"}
           </button>
         </form>
 
@@ -109,7 +131,11 @@ export default function App() {
               <ul className="mt-3 divide-y divide-slate-200">
                 {items.map((item) => (
                   <li key={item.id} className="flex items-center justify-between gap-3 py-3">
-                    <span>{item.title}</span>
+                    <div>
+                      <p className="font-medium text-slate-900">{item.title}</p>
+                      <p className="text-sm text-slate-600">{item.category}</p>
+                      <p className="text-sm text-slate-500">{item.description}</p>
+                    </div>
                     <button
                       type="button"
                       onClick={() => handleRemove(item.id)}
